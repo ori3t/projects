@@ -1,0 +1,130 @@
+ nmcli con add con-name mlnx0 ifname eth3  type ethernet ip4 10.0.10.7/24
+nmcli con show
+nmcli dev status
+nmcli  con delete mlnx0
+nmcli con sh
+
+mount /dev/disk/by-label/e8b-vol_a   /mnt/e8b0  -o noatime,nodiratime
+
+################# Linux commands ############################
+blkid -po udev device_name		# check device
+modinfo nvme					#check module
+
+
+################# how to check ofed installed version #################
+lsmod |grep mlx
+modinfo mlx5_ib
+
+######################TWO IPs PER  PORT Network  #####################
+nmcli con add con-name mlnx1  ifname ens1  type ethernet
+nmcli con mod mlnx1 ipv4.address  10.0.20.207/24,10.0.21.207/24
+nmcli con mod mlnx1  ipv4.method manual 802-3-ethernet.mtu 4200
+nmcli  con down mlnx1; nmcli  con up  mlnx1
+
+nmcli con add type ethernet con-name test-lab ifname ens9 ip4 10.10.10.10/24 gw4 10.10.10.254
+nmcli con mod  mngmt ipv4.gateway 192.168.10.254 ipv4.dns 192.168.10.254
+
+
+
+lspci | egrep -i --color 'network|ethernet'
+cat /proc/net/dev
+
+################### turn on/of cpu ##################
+for i in `seq 10 55`;do echo 0 > /sys/bus/cpu/devices/cpu$i/online; done
+
+
+####################   mellanox ###########################
+ Pause parameters:
+ ethtool -A ens1f0 tx on rx on
+ ethtool -a ens1f0
+####################   mellanox switch  #######################
+admin/admin
+en
+conf t
+show interfaces ethernet status
+
+##### mellanox splitting port #######
+	
+interface ethernet 1/1/4  shutdown
+interface ethernet 1/4/1  module-type qsfp force
+show interfaces ethernet status
+
+
+############### controller ###################
+
+lsblk (-o)
+fdisk /dev/"partition"
+
+
+#from touchstone  run the automation
+sudo tools/e8slash -s e8up -vvv
+
+# run ipython
+ e8cli.py
+
+#on the host  create host 
+e8.add_host(xxxx)
+
+# create  volume
+ self.c1.cli.add_volume(vol_name='v1', vol_capacity_gb=1, block_shift=12)
+ # map the volume
+self.c1.cli.map_volume_to_host(vol_name='v1', host_name='h1')
+ 
+#then you can enter to controller and host ( 10.0.0.1 & 10.0.0.2 for example)
+
+
+#BLOCK SECTORS
+for i in `seq 3 9`; do hdm format --path  /dev/nvme${i} --sector-size 512 --force ; done
+for i in `seq 0 9`; do  hdm get-info --path /dev/nvme${i}n1 | grep "Sector Size" ; done
+
+#############install##########
+cd /home/ci-work/jenkins-work/jenkins-home/jobs/E8/builds/lastSuccessfulBuild/archive/packaged_build/
+
+PYTHONPATH=./run/e8_install.zip python -m ctrl_remote_install  --method pxe  --conf /root/builder/configs/tupac/conf_org.tar  --ctrl 0:192.168.10.35:22:
+
+PYTHONPATH=./run/e8_install.zip python -m ctrl_remote_install  --method up --conf-tar /root/builder/ori/clapton/conf.tar   --ctrl 0:192.168.10.125:22:192.168.10.151
+
+
+################## snipets ###########################
+
+[root@h3 ori]#  ./ctrl_conf.py --ctrl 0:56 --disk_count 10 --hw_layout tupac.json --mgmt_port mgmt_0_0:0:192.168.10.159/24 --ipmi_port ipmi_0_0:0:192.168.10.169/24 --data_port data_0_0:0:10.0.20.159/24 --data_port data_0_1:0:10.0.21.159/24 --data_port data_0_2:0:10.0.22.159/24 --data_port data_0_3:0:10.0.23.159/24 --disk_size_gb 1500 --max_e8_clients 32 --block_shift 9 --dest_dir tupac gen_conf_tar
+
+[root@h3 packaged_build]# ./ctrl_conf.py --ctrl 0:10 --disk_count 8 --cluster_base_port 151 --hw_layout clapton.json --mgmt_team_member_port mgmt_0_0:0:team_0_0  --mgmt_team_master_port team_0_0:0:192.168.10.151/24 --ipmi_port ipmi_0_0:0:192.168.10.161/24 --data_port data_0_0:0:10.0.20.151/24 --data_port data_0_1:0:10.0.21.151/24 --data_port data_0_2:0:10.0.22.151/24 --data_port data_0_3:0:10.0.23.151/24 --disk_size_gb 700 --max_e8_clients 32 --block_shift 12 --dest_dir   clapton gen_conf_tar
+
+
+##################nvme##########################3
+
+modprobe
+[root@tupac ~]# updatedb
+[root@tupac ~]# locate nvme.ko
+/usr/lib/debug/usr/lib/modules/3.10.0-327.4.5.el7.x86_64/kernel/drivers/block/nvme.ko.debug
+/usr/lib/modules/3.10.0-327.13.1.el7.x86_64/extra/nvme.ko
+/usr/lib/modules/3.10.0-327.13.1.el7.x86_64/kernel/drivers/block/nvme.ko
+[root@tupac ~]# rmmod nvme 
+[root@tupac ~]# insmod /usr/lib/modules/3.10.0-327.13.1.el7.x86_64/kernel/drivers/block/nvme.ko
+
+
+
+e8.add_volume(vol_name, vol="vol_1"_capacity_gb=1000, block_shift=9)
+e8.map_volume_to_host(vol_name="vol_1", host_name="h8")
+
+
+############################################################  WITH NEW PARAMETERS  ########################
+
+ ./ctrl_conf.py --ctrl 0:10 --disk_count 8 --cluster_base_port 151 --hw_layout clapton.json --mgmt_team_member_port mgmt_0_0:0:team_0_0  --mgmt_team_master_port team_0_0:0:172.16.0.2:172.16.0.2:dhcp:192.168.10.151/24 --ipmi_port ipmi_0_0:0:192.168.10.161/24 --data_port data_0_0:0:10.0.20.151/24 --data_port data_0_1:0:10.0.21.151/24 --data_port data_0_2:0:10.0.22.151/24 --data_port data_0_3:0:10.0.23.151/24 --disk_size_gb 700 --max_e8_clients 32 --block_shift 12 --dest_dir   clapton gen_conf_tar
+
+
+[root@h3 ori]# ./ctrl_conf.py --ctrl 0:14 --disk_count 10 --hw_layout tupac.json --cluster_base_port 159  --mgmt_team_member_port mgmt_0_0:0:team_0_0  --mgmt_team_master_port team_0_0:0:::dhcp:192.168.10.159/24  --ipmi_port ipmi_0_0:0:192.168.10.169/24 --data_port data_0_0:0:10.0.20.159/24 --data_port data_0_1:0:10.0.21.159/24 --data_port data_0_2:0:10.0.22.159/24 --data_port data_0_3:0:10.0.23.159/24 --disk_size_gb 1500 --max_e8_clients 32 --block_shift 9 --dest_dir tupac gen_conf_tar
+
+
+
+
+#####################cisco##############
+configure terminal  					#enter config state 
+show run 
+show interface status
+interface eth1/1/1,eth1/13,eth1/14		  	# configure all chosen ports ( in this case ports 1,13,14)
+switchport mode trunk 					# select mode trunk
+switchport trunk allowed vlan 100			# create vlan 100
+show vlan						# show vlans
+show running-config
