@@ -11,6 +11,8 @@ import sys
 import logging
 import re
 
+
+#######################
 always_up_ports = 1
 host_list = []
 host_file = "host_list"
