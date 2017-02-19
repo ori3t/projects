@@ -70,6 +70,18 @@ def copy_E8InternalTools():
         fio_dir=config.FIO_TEST
         run("mkdir -p {}".format(config.FIO_TEST))
         put("E8InternalTools", fio_dir,mode=0755)
+
+
+@roles("controllers")
+@parallel
+def get_logs_E8InternalTools(log_dir):
+    with settings(warn_only=True):
+        fio_dir = config.FIO_TEST+"/"+"E8InternalTools/fio/results/*"
+        print  fio_dir
+        local_dir=log_dir+"/results"
+        local("mkdir -p  %s" %local_dir)
+        get(local_path=local_dir,remote_path=fio_dir)
+
 @roles("hosts")
 @parallel
 def copy_fio():
@@ -82,7 +94,49 @@ def copy_fio():
 @roles("controllers")
 def c_find_ctl_type():
     with hide('everything'):
-        if len(env.hosts) == 2:
-            print "2U24"
+        if len(config.CONTROLLERS.keys()) == 2:
+            ctr_type="2U24"
+        elif len(config.CONTROLLERS.keys()) == 1:
+            ctr_type="1U10"
         else:
-            print "1U10"
+            exit(1)
+    # print ctr_type
+    return ctr_type
+
+@runs_once
+@roles("controllers")
+def _get_block_shift():
+    shift_line = run("grep block_shift /opt/E8/data/conf/DONT_USE_first_boot_config.json")
+    m = re.search(r"(\d\d?)", shift_line)
+    if m:
+        return m.group(1)
+    else:
+        exit(1)
+
+@runs_once
+@roles("controllers")
+def c_create_volumes():
+    """
+    - Create and map volume
+    """
+    hosts = ""
+    size="300"
+    cmd = []
+    block_shift = _get_block_shift()
+    for i in config.HOSTS.keys():
+         hosts += str(i)+","
+    cont = prompt('In order to perform fio %sG test volume(s) need to be created for %s '
+                  'Do you want to continue?'%(size,hosts),
+                  '(yes/no)',default='yes', validate=r'^yes|no$')
+    if cont == 'no':
+        exit(1)
+    for host in config.HOSTS.keys():
+        vol = host
+        cmd += ['e8.add_host(host_name="%s")' % host,
+                'e8.add_volume(vol_name="%s", vol_capacity_gb=%s, block_shift=%s)' % (vol,size, block_shift),
+                'e8.map_volume_to_host(vol_name="%s", host_name="%s")' % (vol, host),
+                ]
+    c_e8cli(cmd)
+
+def c_e8cli(cmd):
+    run("echo -e '%s' | /opt/E8/cli/e8cli.py" % "\\n".join(cmd))

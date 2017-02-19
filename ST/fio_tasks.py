@@ -33,7 +33,7 @@ def _mach_performance(results_file,run_type):
         if key in config.DISK_TYPE:
             max_val = value[run_type] + value[run_type]*config.DISK_IO_MARGIN
             min_val = value[run_type] - value[run_type]*config.DISK_IO_MARGIN
-    with hide('everything'), settings(warn_only=True):
+    with hide(), settings(warn_only=True):
         line = run("grep iops {0}/{1}".format(config.FIO_TEST,results_file))
         m = re.search(r"iops=(\d+\(?)", line)
         b = re.search(r"bw=(\d+\(?)", line)
@@ -42,7 +42,7 @@ def _mach_performance(results_file,run_type):
         if int(min_val) <= iop <= int(max_val):
             print " GOOD: HOST : {0}   IOPS: {1} {2} {3} BW: {4}".format(env.host, config.G, iop, config.W, bw)
         else:
-            print " ERROR: HOST : {0}  IOPS: {1} {2} {3} BW: {4}".format(env.host, config.G, iop, config.W, bw)
+            print " ERROR: HOST : {0}  IOPS: {1} {2} {3} BW: {4}".format(env.host, config.R, iop, config.W, bw)
 
 
 #
@@ -107,11 +107,11 @@ def _fio_read(  iodepth=64,
         with cd(config.FIO_TEST):
             run(" ".join(args))
 
-
+@roles("hosts")
 def _e8fio(filename,
             engine,
             iodepth=64,
-            numjobs=8,
+            numjobs=1,
             runtime=10,
             size="30GiB",
             rw="read",
@@ -143,35 +143,39 @@ def _e8fio(filename,
 @parallel
 @roles("hosts")
 def rand_read():
-    with hide(), settings(warn_only=True):
-        execute(_fio_read, iodepth=64,
-                  numjobs=8,
-                  runtime=10,
-                  size="30GiB",
-                  engine="libaio",
-                  rw="randrw  --rwmixread=100",
-                  filename=config.RAND_READ
-                )
+    status=run("lsblk  |grep ^e8")
+    if (status):
+        with hide(), settings(warn_only=True):
+            execute(_fio_read, iodepth=64,
+                      numjobs=8,
+                      runtime=10,
+                      size="300GiB",
+                      engine="libaio",
+                      rw="randrw  --rwmixread=100",
+                      filename=config.RAND_READ
+                    )
+    else:
+        print "ERROR: no e8block"
+        exit(1)
 
 @parallel
 @roles("hosts")
 def rand_read_perf():
-    execute(_mach_performance,config.RAND_READ,"e8block")
+        execute(_mach_performance,config.RAND_READ,"e8block")
+
 
 
 @parallel
 @roles("hosts")
-def e8fio_read():
-    with hide('running', 'stdout'), settings(warn_only=True):
-        print config.HOSTS[env.host]["controller_ip"]
-        execute(_e8fio,filename="rdma\\://%s\\:1122,%s" % (config.HOSTS[env.host]["controller_ip"],
-                                                           config.HOSTS[env.host]["vols"]),
+def e8fio_read(controller_ip):
+    with hide('running'), settings(warn_only=False):
+        execute(_e8fio,filename="rdma\\://%s\\:1122,%s" % (controller_ip,env.host),
                 engine="/opt/E8/lib/e8fio_eng.so",
                 iodepth=64,
                 numjobs=1,
                 runtime=10,
-                size="100GiB",
-                rw="randrw",
+                size="300GiB",
+                rw="randread",
                 out_file=config.E8FIO_READ)
 
         execute(_mach_performance,config.E8FIO_READ,"e8lib")

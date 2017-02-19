@@ -1,10 +1,11 @@
 import time
 from fabric.contrib.files import *
 from fabric.api import *
+from fabric.network import ssh
 import tempfile
 from fabric.contrib import *
 
-
+ssh.util.log_to_file("paramiko.log", 10)
 #####################################################3
 DISK_TYPE = "HGST_P100"
 DISK_IO_MARGIN = 0.1
@@ -21,17 +22,18 @@ P = '\033[35m' # purple
 
 
 env.hosts = [
-    # 'root@abba0',
+     # '#root@abba0',
     #   'root@abba1',
-    # 'root@sm12',
+    'root@sm12',
     'root@cliff',
     ]
 env.passwords = {
-    # 'root@abba0:22': 'tctvkk12rn,di',
+     # 'root@abba0:22': 'tctvkk12rn,di',
     #  'root@abba1:22': 'tctvkk12rn,di',
     'root@cliff:22': 'tctvkk12rn,di',
-     # 'root@sm12:22': 'root',
+    'root@sm12:22': 'root',
 }
+
 
 env.user = 'root'
 env.password = 'root'
@@ -53,7 +55,7 @@ HOSTS = {
 
 CONTROLLERS = {
     "cliff": dict(id=0,ip=" ",blk_size=4096,port=" "),    # add controller hostname
-     # "abba1": dict(id=1, ip=" ", blk_size=4096, port=" "),  # add controller hostname
+    # "abba0": dict(id=1, ip=" ", blk_size=4096, port=" "),  # add controller hostname
 }
 
 jobfile="/opt/E8/bin/jobfile"

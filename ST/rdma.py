@@ -105,7 +105,7 @@ def rdma_client():
             if x.return_code == 0:
                 print "Passed  RDMA connection %s" %(env.host)
             else:
-                print "Bad RDMA connection on  %s" %(env.host)
+                print "ERROR: RDMA connection on  %s" %(env.host)
 
 
 @parallel
@@ -121,13 +121,13 @@ def h_ib_write_bw(data_port):
         if x.return_code == 0:
             print "Passed ib_write_bw test on %s" %(env.host)
         else:
-            print "Bad ib_write_bw  test on  %s" %(env.host)
+            print "ERROR: ib_write_bw test on  %s" %(env.host)
 
 @parallel
 @roles("controllers")
 def ctr_ib_write_bw():
     with settings(warn_only=True):
-        execute(background_run, "ib_write_bw  -m 4200 -F -p 1122  -a")
+        execute(background_run, "ib_write_bw  -m 4096 -F -p 1122  -a")
 
 @roles("hosts")
 def h_ib_write_lat(data_port):
@@ -136,11 +136,11 @@ def h_ib_write_lat(data_port):
         if x.return_code == 0:
             print "Passed ib_write_lat test on %s" %(env.host)
         else:
-            print "Bad ib_write_lat  test on  %s" %(env.host)
+            print "ERROR: ib_write_lat  test on  %s" %(env.host)
 
 @parallel
 @roles("controllers")
 def ctr_ib_write_lat():
     with settings(warn_only=True):
-        execute(background_run, "ib_write_lat  -m 4200 -F -p 1122  -a")
+        execute(background_run, "ib_write_lat  -m 4096 -F -p 1122  -a")
 
