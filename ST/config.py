@@ -22,28 +22,30 @@ P = '\033[35m' # purple
 
 
 env.hosts = [
-     # '#root@abba0',
-    #   'root@abba1',
-    'root@sm12',
-    'root@cliff',
+     'root@abba0',
+     'root@abba1',
+     'root@jafa',
+    # 'root@sm12',
+    # 'root@cliff',
     ]
 env.passwords = {
-     # 'root@abba0:22': 'tctvkk12rn,di',
-    #  'root@abba1:22': 'tctvkk12rn,di',
-    'root@cliff:22': 'tctvkk12rn,di',
-    'root@sm12:22': 'root',
+     'root@abba0:22': 'tctvkk12rn,di',
+     'root@abba1:22': 'tctvkk12rn,di',
+     'root@jafa:22': 'root',
+    # 'root@cliff:22': 'tctvkk12rn,di',
+    # 'root@sm12:22': 'root',
 }
 
 
 env.user = 'root'
-env.password = 'root'
+env.password = 'tctvkk12rn,di'
 #
 # if you have key based authentication, uncomment and point to private key
 # env.key_filename = '~/.ssh/id_rsa'
 # if you have password based authentication
 
 HOSTS = {
-    "sm12": dict(port="mlx5_0"),
+    # "sm12": dict(port="mlx5_0"),
     # "sm16": dict(vols="sm16",
     #             controller_ip="10.0.23.169",
     #             numa_cpu_nodes="1"),
@@ -54,8 +56,8 @@ HOSTS = {
 }
 
 CONTROLLERS = {
-    "cliff": dict(id=0,ip=" ",blk_size=4096,port=" "),    # add controller hostname
-    # "abba0": dict(id=1, ip=" ", blk_size=4096, port=" "),  # add controller hostname
+    "172.16.10.162": dict(id=0,ip=" ",blk_size=4096,port=" "),    # add controller hostname
+    "172.16.10.163": dict(id=1, ip=" ", blk_size=4096, port=" "),  # add controller hostname
 }
 
 jobfile="/opt/E8/bin/jobfile"

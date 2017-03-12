@@ -12,22 +12,28 @@ def copy_fio():
 
 
 @roles("controllers")
-@parallel
 def ipmi_fru():
-    run("ipmitool  fru")
+    with hide('everything'), settings(warn_only=False):
+        line=run("ipmitool  fru | grep \'Product Name\' ")
+        fields = line.strip().split(":")
+        system_type = fields[1].split()
+        print(system_type[0])
 
 @roles("controllers")
-@parallel
 def ipmi_bmc():
-    run("ipmitool bmc info")
+    with hide('everything'), settings(warn_only=False):
+        line=run("ipmitool bmc info | grep \'Firmware Revision'\ ")
+        fields = line.strip().split(":")
+        system_type = fields[1].split()
+        print(system_type[0])
 
 @roles("controllers")
-@parallel
 def bios_ver():
-    run("dmidecode -s bios-version")
+    with hide('everything'), settings(warn_only=False):
+        result=run("dmidecode -s bios-version")
+        print result
 
 @roles("controllers")
-@parallel
 def ipmi_sensor():
     run("ipmitool  sdr list")
 
@@ -39,7 +45,6 @@ def run_fio(ctrl_type):
 
 
 @roles("controllers")
-@parallel
 def validate_pci(opt=""):
     validate = config.FIO_TEST + "/E8InternalTools/scripts/"
     with cd(validate):

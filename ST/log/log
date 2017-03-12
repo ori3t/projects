@@ -1,0 +1,40 @@
+[abba1] Executing task 'ipmi_fru'
+[abba0] Executing task 'ipmi_fru'
+[abba0] run: ipmitool  fru
+[abba0] out: FRU Device Description : Builtin FRU Device (ID 0)
+[abba0] out:  Chassis Type          : SubChassis
+[abba0] out:  Chassis Part Number   : X2BC05V0A021211XXP
+[abba0] out:  Chassis Serial        : C19-16061700100002
+[abba0] out:  Board Mfg Date        : Fri Jan  8 19:41:00 2016
+[abba0] out:  Board Mfg             : AIC
+[abba0] out:  Board Product         : PHOENIX
+[abba0] out:  Board Serial          : 64236-1622-00074
+[abba0] out:  Board Part Number     : B48-DTIAT04T00C10A
+[abba0] out:  Product Manufacturer  : AIC
+[abba0] out:  Product Name          : HA202E-PH
+[abba0] out:  Product Part Number   : X2BC05V0A021211XXP
+[abba0] out:  Product Version       : 01
+[abba0] out:  Product Serial        : C19-16061700100002
+[abba0] out:  Product Asset Tag     : 01
+[abba0] out: 
+[abba0] out: 
+
+[abba1] run: ipmitool  fru
+[abba1] out: FRU Device Description : Builtin FRU Device (ID 0)
+[abba1] out:  Chassis Type          : SubChassis
+[abba1] out:  Chassis Part Number   : X2BC0002A11110210P
+[abba1] out:  Chassis Serial        :  
+[abba1] out:  Board Mfg Date        : Fri Jan  8 19:41:00 2016
+[abba1] out:  Board Serial          : 64236-1622-00186
+[abba1] out:  Board Part Number     : B48-DTIAT04T00C10A
+[abba1] out:  Product Manufacturer  : AIC
+[abba1] out:  Product Name          : HA202E-PH
+[abba1] out:  Product Part Number   : X2BC0002A11110210P
+[abba1] out:  Product Version       : 01
+[abba1] out:  Product Serial        :  
+[abba1] out:  Product Asset Tag     : 01
+[abba1] out: 
+[abba1] out: 
+
+
+Done.

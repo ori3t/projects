@@ -11,7 +11,7 @@ from collections import OrderedDict
 def _get_data_interfaces():
     interfaces = dict()
     data ={}
-    with hide('everything'):
+    with hide():
         ibdev = run("ibdev2netdev")
         for line in ibdev.splitlines():
             m = re.search(r"==> (\w+) \((\w+)\)", line)

@@ -51,9 +51,10 @@ def c_vanilla_nvme():
     """
       - Change to vanilla linux nvme driver
      """
-    c_stop_services()
-    run("rmmod nvme")
-    run("insmod /usr/lib/modules/`uname -r`/kernel/drivers/block/nvme.ko")
+    # c_stop_services()
+    with settings(warn_only=True):
+        run("rmmod nvme")
+        run("insmod /usr/lib/modules/`uname -r`/kernel/drivers/block/nvme.ko")
 
 @roles("controllers")
 def c_e8_nvme():
@@ -78,7 +79,7 @@ def get_logs_E8InternalTools(log_dir):
     with settings(warn_only=True):
         fio_dir = config.FIO_TEST+"/"+"E8InternalTools/fio/results/*"
         print  fio_dir
-        local_dir=log_dir+"/results"
+        local_dir=log_dir+"/results_"+env.host
         local("mkdir -p  %s" %local_dir)
         get(local_path=local_dir,remote_path=fio_dir)
 
@@ -100,7 +101,7 @@ def c_find_ctl_type():
             ctr_type="1U10"
         else:
             exit(1)
-    # print ctr_type
+    print ctr_type
     return ctr_type
 
 @runs_once

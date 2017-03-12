@@ -1,0 +1,30 @@
+{
+  "DISKS":
+  {
+    "HGST_P100":
+    {
+      "e8lib": 1000000,
+      "e8block": 900000
+    },
+    "INTEL_P3700":
+    {
+      "e8lib": 900000,
+      "e8block": 800000
+    }
+  },
+  "SYSTEM":
+  {
+    "1U10":
+    {
+      "PRODUCT_NAME": "SB122A-PH",
+      "BMC_FIRMWARE": "1.30",
+      "BIOS_VERSION":"PHEHV070"
+    },
+    "2U24":
+    {
+      "PRODUCT_NAME": "HA202E-PH",
+      "BMC_FIRMWARE": "1.80",
+      "BIOS_VERSION":"PHODV078"
+    }
+  }
+}

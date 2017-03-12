@@ -8,18 +8,22 @@ import json
 from collections import OrderedDict
 
 
-
+@roles("controllers")
 @runs_once
-def disk_tresholds(run_type):
-    with open('disk_tresholds.json') as fp:
+def system_ver(product_ver,bmc_ver,bios_ver,ctr_type):
+    with open('system_params.json') as fp:
         actions_map = json.load((fp), object_pairs_hook=OrderedDict)
         fp.seek(0)
     for key, value in actions_map.iteritems():
-        if key in config.DISK_TYPE:
-            max_val = value['e8block'] + value['e8block']*config.DISK_IO_MARGIN
-            min_val = value['e8lib'] - value['e8lib']*config.DISK_IO_MARGIN
-            print(config.R + "" + str(max_val) + " " + config.W)
-            return(max_val,min_val)
+        if key in "SYSTEM":
+            for j,k in value.iteritems():
+                if j in ctr_type:
+                    if k["PRODUCT_NAME"] == product_ver \
+                    and k["BMC_FIRMWARE"] == bmc_ver \
+                    and k["BIOS_VERSION"] == bios_ver:
+                        print "GOOD"
+                    else:
+                        print "ERROR in firmware versions"
 
 
 @roles("hosts")
